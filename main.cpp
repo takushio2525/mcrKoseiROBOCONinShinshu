@@ -7,6 +7,7 @@
 // Copyright:       Renesas Electronics Corporation
 //                 Hitachi Document Solutions Co., Ltd.
 //                 宮崎県高等学校教育研究会　工業部会
+
 //                 　　　マイコンカーラリー指導担当代表者会
 //------------------------------------------------------------------//
 
@@ -83,10 +84,10 @@
 #define LeftBorder 50
 #define RightBorder -50
 
-#define CrossRow 40//クロスラインを見つけるために使う行
+#define CrossRow 40 // クロスラインを見つけるために使う行
 
-#define CrossTop 20//クロスライン検出範囲　トップ
-#define CrossBottom 100//クロスライン検出範囲　ボトム
+#define CrossTop 20     // クロスライン検出範囲　トップ
+#define CrossBottom 100 // クロスライン検出範囲　ボトム
 
 //------------------------------------------------------------------//
 // Constructor
@@ -274,17 +275,15 @@ volatile int laneAfterDistance;
 volatile int laneCounterDistance;
 volatile bool resetFlag = true;
 
-
-  volatile int imgArray[IMAGE_HEIGHT][IMAGE_WIDTH];//画像データを入れる配列
-  volatile int LeftLineArray[IMAGE_HEIGHT];//中心線の左境界座標
-  volatile int RightLineArray[IMAGE_HEIGHT];
-  volatile  int CenterLineArray[IMAGE_HEIGHT];
-  volatile int firstMiddle = 0;//最下層の中心線の左境界座標
+volatile int imgArray[IMAGE_HEIGHT][IMAGE_WIDTH]; // 画像データを入れる配列
+volatile int LeftLineArray[IMAGE_HEIGHT];         // 中心線の左境界座標
+volatile int RightLineArray[IMAGE_HEIGHT];
+volatile int CenterLineArray[IMAGE_HEIGHT];
+volatile int firstMiddle = 0; // 最下層の中心線の左境界座標
 
 volatile int crankTimer;
 volatile int crankHandleRight;
 volatile int crankHandleLeft;
-
 
 volatile bool RightX = false;
 volatile bool LeftX = false;
@@ -322,14 +321,12 @@ typedef struct
 SDLOG_T log_data[LOG_NUM]; // ログ保存データ
 unsigned int log_no = 0;   // ログの記録番地（時間）
 
+static int imgDeviation[IMAGE_HEIGHT][IMAGE_WIDTH];
+static int ExecutionFlag = false;
 
- static int imgDeviation[IMAGE_HEIGHT][IMAGE_WIDTH];
-  static int ExecutionFlag = false;
-  
-  static int minDefference = 500;
+static int minDefference = 500;
 
-  
-    int HandleNum;
+int HandleNum;
 
 ///****************************************************************
 // Main function
@@ -486,7 +483,7 @@ int main(void)
                         for (x = 0; x < 160; x++)
                         {
                             c = getImage(x, y) >= 200 ? 1 : 0; // 180を変えるとしきい値が変わる
-                            if (x == -allDeviation[y]+80)
+                            if (x == -allDeviation[y] + 80)
                             {
                                 printf("\x1b[43m%d\x1b[49m", c);
                             }
@@ -518,7 +515,7 @@ int main(void)
                         for (x = 0; x < 160; x++)
                         {
                             c = getImage(x, y) >= 200 ? 1 : 0; // 180を変えるとしきい値が変わる
-                            if (x == LeftLineArray[y] + 80)//黄色
+                            if (x == LeftLineArray[y] + 80)    // 黄色
                             {
                                 printf("\x1b[43m%d\x1b[49m", c);
                             }
@@ -530,7 +527,7 @@ int main(void)
                             {
                                 printf("\x1b[41m%d\x1b[49m", c);
                             }
-                            
+
                             else
                             {
                                 printf("%d", c);
@@ -1131,11 +1128,15 @@ void intTimer(void)
     case 11:
         // 通常トレース
         led_m(50, 1, 1, 1);
-        if(abs(allDeviation[60]) <=15){
-            if(lineflag_cross){
+        if (abs(allDeviation[60]) <= 15)
+        {
+            if (lineflag_cross)
+            {
                 pattern = 31;
-                cnt1=0;
-            }else if(lineflag_left){
+                cnt1 = 0;
+            }
+            else if (lineflag_left)
+            {
                 pattern = 21;
                 cnt1 = 0;
             }
@@ -1147,9 +1148,8 @@ void intTimer(void)
             //     }
         }
 
- 
-       myHandleVal = allDeviation[60] * 0.55;
- 
+        myHandleVal = allDeviation[60] * 0.55;
+
         motor(60, 60);
         handle(myHandleVal);
 
@@ -1161,152 +1161,172 @@ void intTimer(void)
 
         break;
 
-        case 21:
+    case 21:
         led_m(50, 0, 0, 1);
 
         motor(60, 60);
         handle(0);
 
-        if(cnt1 >= 150){
+        if (cnt1 >= 150)
+        {
             pattern = 22;
             cnt1 = 0;
         }
         break;
 
-        case 22:
-         led_m(50, 0, 1, 0);
+    case 22:
+        led_m(50, 0, 1, 0);
 
-        myHandleVal = allDeviation[60]* 0.55;
+        myHandleVal = allDeviation[60] * 0.55;
         handle(myHandleVal);
         motor(70, 70);
-        if(!lineflag_center){
+        if (!lineflag_center)
+        {
             pattern = 23;
             cnt1 = 0;
         }
         break;
 
-        case 23:
+    case 23:
         motor(70, 70);
         handle(0);
-        if(cnt1 >= 150){
+        if (cnt1 >= 150)
+        {
             pattern = 24;
             cnt1 = 0;
         }
         break;
 
-        case 24:
+    case 24:
         led_m(50, 1, 0, 0);
 
         motor(50, 75);
         handle(15);
 
-        if(cnt1 >= 150){
+        if (cnt1 >= 150)
+        {
             pattern = 25;
             cnt1 = 0;
         }
         break;
 
-        case 25:
+    case 25:
         motor(60, 60);
         handle(-8);
 
-        if(cnt1 >= 100){
+        if (cnt1 >= 100)
+        {
             pattern = 26;
             cnt1 = 0;
         }
         break;
 
-        case 26:
-       motor(60, 60);
+    case 26:
+        motor(60, 60);
 
-        if(cnt1 <= 300){
-        handle(3);
-        }else {
-        handle(-3);
+        if (cnt1 <= 300)
+        {
+            handle(3);
+        }
+        else
+        {
+            handle(-3);
         }
 
-        if(lineflag_center){
+        if (lineflag_center)
+        {
             pattern = 11;
             cnt1 = 0;
         }
         break;
 
-        
-
-      case 31:
-       led_m(50, 0, 0, 1);
-       motor(60, 60);
-       handle(0);
-       if(cnt1 >= 150){
-           pattern = 32;
-           cnt1 = 0;
-       }
-        break;
-
-        case 32:
-           motor(50, 50);
-           myHandleVal = allDeviation[60] * 0.52;
-           handle(myHandleVal);
-        
-        if(lineflag_right){
-            pattern = 41;
+    case 31:
+        led_m(50, 0, 0, 1);
+        motor(60, 60);
+        handle(0);
+        if (cnt1 >= 150)
+        {
+            pattern = 32;
             cnt1 = 0;
-        }else if (lineflag_left) {
-         pattern = 51;
-         cnt1 = 0;
         }
         break;
 
-        case 41:
-         led_m(50, 0, 0, 1);
+    case 32:
+        motor(50, 50);
+        myHandleVal = allDeviation[60] * 0.52;
+        handle(myHandleVal);
+
+        if (lineflag_right)
+        {
+            pattern = 41;
+            cnt1 = 0;
+        }
+        else if (lineflag_left)
+        {
+            pattern = 51;
+            cnt1 = 0;
+        }
+        break;
+
+    case 41:
+        led_m(50, 0, 0, 1);
         motor(80, 20);
         handle(-40);
-        if(cnt1 >= 430){
+        if (cnt1 >= 430)
+        {
             pattern = 42;
             cnt1 = 0;
         }
         break;
 
-         case 42:
+    case 42:
         led_m(50, 0, 1, 0);
 
-         if(lineflag_center){
-             pattern = 11;
-         }
-          if(cnt1 <= 300){
-        motor(80, 20);
-         handle(-40);
-         }else {
-         motor(60, 60);
-        handle(0);
-         }
-         break;
-
-        case 51:
-         led_m(50, 0, 1, 0);
-
-        motor(20, 80);
-         handle(40);
-    
-        if(cnt1 >= 430){
-            pattern = 52;
-         }
+        if (lineflag_center)
+        {
+            pattern = 11;
+        }
+        if (cnt1 <= 300)
+        {
+            motor(80, 20);
+            handle(-40);
+        }
+        else
+        {
+            motor(60, 60);
+            handle(0);
+        }
         break;
 
+    case 51:
+        led_m(50, 0, 1, 0);
 
-        case 52:
-        led_m(50, 1, 0, 0);
-        if(cnt1 <= 300){
         motor(20, 80);
-         handle(40);
-         }else {
-         motor(60, 60);
-        handle(0);
-         }
-        if(lineflag_center){
-             pattern = 11;
-         }
-         break;
+        handle(40);
+
+        if (cnt1 >= 430)
+        {
+            pattern = 52;
+        }
+        break;
+
+    case 52:
+        led_m(50, 1, 0, 0);
+        if (cnt1 <= 300)
+        {
+            motor(20, 80);
+            handle(40);
+        }
+        else
+        {
+            motor(60, 60);
+            handle(0);
+        }
+        if (lineflag_center)
+        {
+            pattern = 11;
+        }
+        break;
 
         // case 21:
         // break;
@@ -1326,168 +1346,168 @@ void intTimer(void)
         // }
         // break;
 
-    // case 21:
-    //     // クロスライン検出時の処理
-    //     led_m(100, 1, 0, 0);
-    //     pattern = 22;
-    //     cnt1 = 0;
-    //     break;
+        // case 21:
+        //     // クロスライン検出時の処理
+        //     led_m(100, 1, 0, 0);
+        //     pattern = 22;
+        //     cnt1 = 0;
+        //     break;
 
-    // case 22:
-    //     // クロスラインを読み飛ばす
+        // case 22:
+        //     // クロスラインを読み飛ばす
 
-    //     motor(10, 10);
-    //     myHandleVal = allDeviation[53] * 0.37;
-    //     handle(myHandleVal);
-    //     if (cnt1 >= lineSkipDistance && !lineflag_left && !lineflag_right)
-    //     {
-    //         pattern = 23;
-    //         cnt1 = 0;
-    //         encoder.clear();
-    //     }
-    //     break;
+        //     motor(10, 10);
+        //     myHandleVal = allDeviation[53] * 0.37;
+        //     handle(myHandleVal);
+        //     if (cnt1 >= lineSkipDistance && !lineflag_left && !lineflag_right)
+        //     {
+        //         pattern = 23;
+        //         cnt1 = 0;
+        //         encoder.clear();
+        //     }
+        //     break;
 
-    // case 23:
-    //     // クロスライン後のトレース、クランク検出
+        // case 23:
+        //     // クロスライン後のトレース、クランク検出
 
-    //     if (lineflag_left)
-    //     {
+        //     if (lineflag_left)
+        //     {
 
-    //         // 左クランクと判断]
-    //         cnt1 = 0;
+        //         // 左クランクと判断]
+        //         cnt1 = 0;
 
-    //         led_m(100, 0, 1, 0);
-    //         handle(crankHandleVal + 4);
-    //         motor(crankMotorPowerIN - 10, crankMotorPowerOUT);
-    //         pattern = 31;
-    //         encoder.update();
+        //         led_m(100, 0, 1, 0);
+        //         handle(crankHandleVal + 4);
+        //         motor(crankMotorPowerIN - 10, crankMotorPowerOUT);
+        //         pattern = 31;
+        //         encoder.update();
 
-    //         break;
-    //     }
-    //     if (lineflag_right)
-    //     {
+        //         break;
+        //     }
+        //     if (lineflag_right)
+        //     {
 
-    //         // 右クランクと判断
-    //         cnt1 = 0;
+        //         // 右クランクと判断
+        //         cnt1 = 0;
 
-    //         led_m(100, 0, 0, 1);
-    //         handle(-crankHandleVal);
-    //         motor(crankMotorPowerOUT, crankMotorPowerIN);
-    //         pattern = 41;
+        //         led_m(100, 0, 0, 1);
+        //         handle(-crankHandleVal);
+        //         motor(crankMotorPowerOUT, crankMotorPowerIN);
+        //         pattern = 41;
 
-    //         break;
-    //     }
-    //     motor(60, 60);
-    //     myHandleVal = allDeviation[53] * 0.40;
-    //     handle(myHandleVal);
-    //     break;
+        //         break;
+        //     }
+        //     motor(60, 60);
+        //     myHandleVal = allDeviation[53] * 0.40;
+        //     handle(myHandleVal);
+        //     break;
 
-    // case 31:
-    //     // 左クランククリア処理　安定するまで少し待つ
-    //     handle(crankHandleVal + 12);
-    //     motor(crankMotorPowerIN - 12, crankMotorPowerOUT);
+        // case 31:
+        //     // 左クランククリア処理　安定するまで少し待つ
+        //     handle(crankHandleVal + 12);
+        //     motor(crankMotorPowerIN - 12, crankMotorPowerOUT);
 
-    //     led_m(100, 0, 1, 0);
-    //     if (cnt1 >= crankDistance)
-    //     {
-    //         pattern = 11;
-    //         cnt1 = 0;
-    //         resetFlag = true;
-    //     }
-    //     break;
-    // case 41:
-    //     // 右クランククリア処理　安定するまで少し待つ
-    //     handle(-crankHandleVal-12);
-    //     motor(crankMotorPowerOUT, crankMotorPowerIN-1);
-    //     led_m(100, 0, 1, 0);
-    //     if (cnt1 >= crankDistance)
-    //     {
-    //         pattern = 11;
-    //         cnt1 = 0;
-    //         resetFlag = true;
-    //     }
-    //     break;
+        //     led_m(100, 0, 1, 0);
+        //     if (cnt1 >= crankDistance)
+        //     {
+        //         pattern = 11;
+        //         cnt1 = 0;
+        //         resetFlag = true;
+        //     }
+        //     break;
+        // case 41:
+        //     // 右クランククリア処理　安定するまで少し待つ
+        //     handle(-crankHandleVal-12);
+        //     motor(crankMotorPowerOUT, crankMotorPowerIN-1);
+        //     led_m(100, 0, 1, 0);
+        //     if (cnt1 >= crankDistance)
+        //     {
+        //         pattern = 11;
+        //         cnt1 = 0;
+        //         resetFlag = true;
+        //     }
+        //     break;
 
-    // case 51:
-    //     // ハーフライン検出時の処理
-    //     led_m(100, 0, 1, 0);
-    //     pattern = 52;
+        // case 51:
+        //     // ハーフライン検出時の処理
+        //     led_m(100, 0, 1, 0);
+        //     pattern = 52;
 
-    //     cnt1 = 0;
-    //     break;
+        //     cnt1 = 0;
+        //     break;
 
-    // case 52:
-    //     // ハーフラインを読み飛ばす
+        // case 52:
+        //     // ハーフラインを読み飛ばす
 
-    //     motor(10, 10);
-    //     myHandleVal = allDeviation[50] * 0.39;
-    //     handle(myHandleVal);
-    //     if (cnt1 >= lineSkipDistance && !lineflag_left && !lineflag_right)
-    //     {
-    //         pattern = 53;
-    //         cnt1 = 0;
-    //     }
-    //     if (laneHandleVal < 0 && (lineflag_left || lineflag_cross))
-    //     {
-    //         pattern = 22;
-    //         break;
-    //     }
-    //     if (laneHandleVal > 0 && (lineflag_right || lineflag_cross))
-    //     {
-    //         pattern = 22;
-    //         break;
-    //     }
-    //     if (lineflag_cross == 1)
-    //     {
-    //         pattern = 22;
-    //         break;
-    //     }
-    //     break;
+        //     motor(10, 10);
+        //     myHandleVal = allDeviation[50] * 0.39;
+        //     handle(myHandleVal);
+        //     if (cnt1 >= lineSkipDistance && !lineflag_left && !lineflag_right)
+        //     {
+        //         pattern = 53;
+        //         cnt1 = 0;
+        //     }
+        //     if (laneHandleVal < 0 && (lineflag_left || lineflag_cross))
+        //     {
+        //         pattern = 22;
+        //         break;
+        //     }
+        //     if (laneHandleVal > 0 && (lineflag_right || lineflag_cross))
+        //     {
+        //         pattern = 22;
+        //         break;
+        //     }
+        //     if (lineflag_cross == 1)
+        //     {
+        //         pattern = 22;
+        //         break;
+        //     }
+        //     break;
 
-    // case 53:
-    //     // ハーフライン後のトレース、レーンチェンジ
+        // case 53:
+        //     // ハーフライン後のトレース、レーンチェンジ
 
-    //     if (!lineflag_center)
-    //     {
+        //     if (!lineflag_center)
+        //     {
 
-    //         pattern = 54;
-    //         led_m(100, 1, 1, 0);
+        //         pattern = 54;
+        //         led_m(100, 1, 1, 0);
 
-    //         cnt1 = 0;
-    //         break;
-    //     }
-    //     motor(30, 30);
-    //     myHandleVal = allDeviation[48] * 0.38;
-    //     handle(myHandleVal);
-    //     break;
+        //         cnt1 = 0;
+        //         break;
+        //     }
+        //     motor(30, 30);
+        //     myHandleVal = allDeviation[48] * 0.38;
+        //     handle(myHandleVal);
+        //     break;
 
-    // case 54:
+        // case 54:
 
-    //     // レーンチェンジ終了のチェック
-    //     handle(0);
+        //     // レーンチェンジ終了のチェック
+        //     handle(0);
 
-    //     motor(laneStraightMotorPower, laneStraightMotorPower);
-    //     if (cnt1 >= 10)
-    //     {
+        //     motor(laneStraightMotorPower, laneStraightMotorPower);
+        //     if (cnt1 >= 10)
+        //     {
 
-    //         pattern = 55;
-    //         led_m(100, 1, 0, 0);
-    //         cnt1 = 0;
-    //     }
-    //     break;
+        //         pattern = 55;
+        //         led_m(100, 1, 0, 0);
+        //         cnt1 = 0;
+        //     }
+        //     break;
 
-    // case 55:
+        // case 55:
 
-    //     handle(laneHandleVal);
-    //     motor(laneMotorPowerLeft, laneCounterMotorPowerRight);
-    //     if (cnt1 > laneDistance)
-    //     {
+        //     handle(laneHandleVal);
+        //     motor(laneMotorPowerLeft, laneCounterMotorPowerRight);
+        //     if (cnt1 > laneDistance)
+        //     {
 
-    //         pattern = 11;
-    //         led_m(100, 0, 0, 0);
-    //         cnt1 = 0;
-    //     }
-    //     break;
+        //         pattern = 11;
+        //         led_m(100, 0, 0, 0);
+        //         cnt1 = 0;
+        //     }
+        //     break;
 
     case 101:
         // 終了　ログ保存中など
@@ -2062,7 +2082,7 @@ void createLineFlag(int rowNum)
 // 偏差を作る関数
 void createDeviation(void)
 {
-    volatile float brightnessThreshold = 0.77;    // 明るさの閾値倍率
+    volatile float brightnessThreshold = 0.77;   // 明るさの閾値倍率
     volatile int minasDifferenceThreshold = -13; // 左側差分検出の閾値
     volatile int plusDifferenceThreshold = 7;    // 右側差分検出の閾値
 
@@ -2450,7 +2470,6 @@ void easyCreateDeviation(int rowNum)
     }
 }
 
- 
 // void kensyutu(void){
 //   for(int y = IMAGE_HEIGHT-1; y >= 0;y--){
 //       for(int x = 0;x < IMAGE_WIDTH;x++){
@@ -2467,13 +2486,11 @@ void easyCreateDeviation(int rowNum)
 //    }
 //   }
 
-
 //         for (int y = IMAGE_HEIGHT; y >= 0; y--) {
 //          LeftLineArray[y] = 0;
-//         }  
+//         }
 
 //         LeftLineArray[119] = 80;
-
 
 // for(int y = IMAGE_HEIGHT-2; y >= 0;y--){//レフトライン検出
 //     for(int x = 0;x < IMAGE_WIDTH-1;x++){
@@ -2501,19 +2518,14 @@ void easyCreateDeviation(int rowNum)
 //     RightLineArray[y] = 0;
 // }
 
-
 // for(int y = IMAGE_HEIGHT-1; y >= 0;y--){
 //  for(int x = LeftLineArray[y];imgDeviation[y][x] > RightBorder;x++){
 //    RightLineArray[y] = x;
 //    if(abs(RightLineArray[y] - RightLineArray[y+1])>=2 && y <= 80){
 //        RightLineArray[y] = RightLineArray[y+1];
 //    }
-//  } 
+//  }
 // }
-
-
-
-
 
 // for (int y = IMAGE_HEIGHT-1; y >= 0; y--) {
 //     RightLineArray[y] -= 80;
@@ -2538,13 +2550,12 @@ void easyCreateDeviation(int rowNum)
 //         }
 //     }
 
-      
 //     for(int x = LeftLineArray[LineRow];x >= LeftLineArray[LineRow] - 3;x--){
 //         if(imgArray[LineRow][x] >= 200){
 //             countR++;
 //         }
 //     }
-    
+
 //     if(countR >= 3){
 //         RightX = true;
 //     }else {
@@ -2555,16 +2566,13 @@ void easyCreateDeviation(int rowNum)
 //     }else{
 //         LeftX = false;
 //     }
-    
+
 //     if(RightX && LeftX){
 //         Cross = true;
 //     }else {
 //     Cross = false;
 //     }
 // }
-
-
-
 
 //------------------------------------------------------------------//
 // End of file
